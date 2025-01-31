@@ -13,30 +13,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(String userId){
-        //todo#4-1 회원조회
-        return null;
+        // #4-1 회원조회
+        return userRepository.findById(userId).orElse(null);
     }
 
     @Override
     public void saveUser(User user) {
-        //todo#4-2 회원등록
-
+        // #4-2 회원등록
+        userRepository.save(user);
     }
 
     @Override
     public void updateUser(User user) {
-        //todo#4-3 회원수정
+        // #4-3 회원수정
+        userRepository.update(user);
     }
 
     @Override
     public void deleteUser(String userId) {
-        //todo#4-4 회원삭제
+        // #4-4 회원삭제
+        userRepository.deleteByUserId(userId);
     }
 
     @Override
     public User doLogin(String userId, String userPassword) {
-        //todo#4-5 로그인 구현, userId, userPassword로 일치하는 회원 조회
-        return null;
+        // #4-5 로그인 구현, userId, userPassword로 일치하는 회원 조회
+        return userRepository.findByUserIdAndUserPassword(userId, userPassword).orElse(null);
     }
 
 }
