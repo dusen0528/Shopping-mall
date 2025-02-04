@@ -46,7 +46,7 @@ public class ControllerFactory {
 
                     for (String path : requestMapping.value()){
                         String key = getKey(requestMapping.method().name(), path);
-                        beanMap.put(key, controllerInstance);
+                        beanMap.put(key, new TransactionalControllerProxy((BaseController) controllerInstance));
                     }
                 }
             } catch (InvocationTargetException e) {

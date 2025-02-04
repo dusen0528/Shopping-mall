@@ -58,6 +58,7 @@ public class ApplicationListener implements ServletContextListener {
 
 
         } catch (Exception e) {
+            DbConnectionThreadLocal.setSqlError(true);
             throw new RuntimeException(e);
         }finally {
             DbConnectionThreadLocal.reset();

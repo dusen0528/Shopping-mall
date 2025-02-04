@@ -1,4 +1,4 @@
-package com.nhnacademy.shoppingmall.controller.auth;
+package com.nhnacademy.shoppingmall.controller.page;
 
 import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
@@ -6,31 +6,31 @@ import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.user.repository.impl.UserRepositoryImpl;
 import com.nhnacademy.shoppingmall.user.service.UserService;
 import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import javax.transaction.Transactional;
 
-
 @Transactional
-@RequestMapping(method = RequestMapping.Method.POST,value = "/loginAction.do")
-public class LoginPostController implements BaseController {
+@RequestMapping(method = RequestMapping.Method.POST, value = "/update_profile.do")
+public class UpdateProfileController implements BaseController {
 
-    private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());
+    UserService userService = new UserServiceImpl(new UserRepositoryImpl());
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        //todo#13-2 로그인 구현, session은 60분동안 유지됩니다.
-        User user = userService.doLogin(req.getParameter("user_id"), req.getParameter("user_password"));
-        if(user==null){
+        HttpSession session = req.getSession();
+        if(session == null || session.getAttribute("user")==null){
             return "redirect:/login.do";
         }
-        HttpSession session = req.getSession();
-        session.setMaxInactiveInterval(3600);
-        session.setAttribute("user", user);
+        String userBirth = req.getParameter("userBirth");
+        String userName = req.getParameter("userName");
+        User user = (User)session.getAttribute("user");
+        user.setUserBirth(userBirth);
+        user.setUserName(userName);
 
-        return "shop/main/index";
+        userService.updateUser(user);
+        return "/shop/user/mypage";
     }
 }

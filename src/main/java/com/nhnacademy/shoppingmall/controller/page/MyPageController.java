@@ -1,27 +1,27 @@
-package com.nhnacademy.shoppingmall.controller.auth;
-
+package com.nhnacademy.shoppingmall.controller.page;
 
 import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
+import com.nhnacademy.shoppingmall.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import javax.transaction.Transactional;
 
-@Transactional
-@RequestMapping(method =  RequestMapping.Method.GET, value = "/logout.do")
-public class LogoutController implements BaseController {
+@RequestMapping(method = RequestMapping.Method.GET, value = "mypage.do")
+public class MyPageController implements BaseController {
+
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        //todo#13-3 로그아웃 구현
         HttpSession session = req.getSession(false);
 
-        if(session!=null){
-            session.invalidate();
+        if(session == null){
+            return "redirect:/login.do";
         }
-        return "redirect:/index.do";
+        User user = (User)session.getAttribute("user");
+
+
+
+        return "/shop/user/mypage";
     }
-
-
 }

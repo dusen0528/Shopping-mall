@@ -60,6 +60,9 @@ public class User {
         return latestLoginAt;
     }
 
+    public void setUserId(String userId){
+        this.userId = userId;
+    }
     public void setUserName(String userName) {
         this.userName = userName;
     }

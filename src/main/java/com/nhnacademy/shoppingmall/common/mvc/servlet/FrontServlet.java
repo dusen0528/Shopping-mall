@@ -38,7 +38,6 @@ public class FrontServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) {
         try {
 
-            // DbConnectionThreadLocal.initialize();
             // todo#7-3 Connection pool로 부터 connection 할당 받습니다. connection은 Thread 내에서
             // 공유됩니다.
 
@@ -60,7 +59,7 @@ public class FrontServlet extends HttpServlet {
             }
         } catch (Exception e) {
             log.error("error:{}", e);
-            // DbConnectionThreadLocal.setSqlError(true);
+//             DbConnectionThreadLocal.setSqlError(true);
             // todo#7-5 예외가 발생하면 해당 예외에 대해서 적절한 처리를 합니다.
             try {
                 // 에러 페이지로 포워딩
