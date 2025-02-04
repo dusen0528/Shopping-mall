@@ -37,12 +37,13 @@ public class ControllerFactory {
 
         for (Class<?> controllerClass : c) {
             try{
-                // 1. 컨트롤러 객체 생성
-                Object controllerInstance = controllerClass.getDeclaredConstructor().newInstance();
 
                 // 2. RequestMapping 어노테이션 확인
                 RequestMapping requestMapping = controllerClass.getAnnotation(RequestMapping.class);
                 if(requestMapping != null){
+                    // 1. 컨트롤러 객체 생성
+                    Object controllerInstance = controllerClass.getDeclaredConstructor().newInstance();
+
                     for (String path : requestMapping.value()){
                         String key = getKey(requestMapping.method().name(), path);
                         beanMap.put(key, controllerInstance);
@@ -65,8 +66,7 @@ public class ControllerFactory {
 
     private Object getBean(String key){
         //todo#5-3 beanMap에서 controller 객체를 반환 합니다.
-
-        return null;
+            return beanMap.get(key);
     }
 
     public Object getController(HttpServletRequest request){
@@ -86,7 +86,6 @@ public class ControllerFactory {
         //todo#5-6  {method}-{key}  형식으로 Key를 반환 합니다.
         //ex GET-/index.do
         //ex POST-/loginAction.do
-
         return method + "-" + path;
     }
 }
