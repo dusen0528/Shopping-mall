@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 
 @Transactional
@@ -27,10 +29,18 @@ public class LoginPostController implements BaseController {
         if(user==null){
             return "redirect:/login.do";
         }
+
+
+        user.setLatestLoginAt(LocalDateTime.now());
+        userService.updateUser(user);
+
         HttpSession session = req.getSession();
         session.setMaxInactiveInterval(3600);
         session.setAttribute("user", user);
 
-        return "shop/main/index";
+
+
+
+        return "redirect:/index.do";
     }
 }

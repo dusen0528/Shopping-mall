@@ -31,6 +31,6 @@ public class UpdateProfileController implements BaseController {
         user.setUserName(userName);
 
         userService.updateUser(user);
-        return "/shop/user/mypage";
+        return "redirect:/mypage.do";
     }
 }

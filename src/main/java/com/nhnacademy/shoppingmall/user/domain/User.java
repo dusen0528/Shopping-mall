@@ -83,6 +83,9 @@ public class User {
         this.userPoint = userPoint;
     }
 
+    public void setLatestLoginAt(LocalDateTime lastestLoginAt){
+        this.latestLoginAt = lastestLoginAt;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

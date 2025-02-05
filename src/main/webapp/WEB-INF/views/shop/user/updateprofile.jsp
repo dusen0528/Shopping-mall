@@ -29,16 +29,18 @@
 
 <c:if test="${not empty user}">
   <form action="/update_profile.do" method="post">
-
-
     <label for="userName">이름:</label>
     <input type="text" id="userName" name="userName" value="${user.userName}" required><br>
 
     <label for="userBirth">생년월일:</label>
     <input type="date" id="userBirth" name="userBirth" value="${user.userBirth}" required><br>
 
-    <input type="submit" value="수정하기">
+    <input type="submit" value="정보 수정">
   </form>
+
+  <div class="mt-3">
+    <a href="/change_password.do" class="btn btn-secondary">비밀번호 변경</a>
+  </div>
 </c:if>
 
 <c:if test="${empty user}">
