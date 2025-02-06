@@ -12,27 +12,36 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.util.UUID;
 
 @Transactional
-@RequestMapping(method = RequestMapping.Method.GET, value = "/mypage.do")
-public class MyPageController implements BaseController {
+@RequestMapping(method =  RequestMapping.Method.POST, value = "/address/register.do")
+public class RegisterAddressController implements BaseController {
+
     AddressService addressService = new AddressServiceImpl(new AddressRepositoryImpl());
+
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
-
         HttpSession session = req.getSession(false);
-
-        if(session == null || session.getAttribute("user") == null){
+        if(session == null || session.getAttribute("user")==null){
             return "redirect:/login.do";
         }
-        User user = (User)session.getAttribute("user");
 
-        List<Address> addresses = addressService.getUserAddresses(user.getUserId());
+        User user = (User) session.getAttribute("user");
 
-        req.setAttribute("user", user);
-        req.setAttribute("addresses", addresses);
+        Address address = new Address(
+                UUID.randomUUID().toString(),
+                user.getUserId(),
+                req.getParameter("recipientName"),
+                req.getParameter("recipientPhone"),
+                req.getParameter("address"),
+                "true".equals(req.getParameter("isDefault"))
+        );
 
-        return "/shop/user/mypage";
+        addressService.saveAddress(address);
+
+
+        return "redirect:/mypage.do";
+
     }
 }

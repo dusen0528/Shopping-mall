@@ -6,33 +6,35 @@ import com.nhnacademy.shoppingmall.address.service.AddressService;
 import com.nhnacademy.shoppingmall.address.service.impl.AddressServiceImpl;
 import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
-import com.nhnacademy.shoppingmall.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import javax.transaction.Transactional;
-import java.util.List;
+
 
 @Transactional
-@RequestMapping(method = RequestMapping.Method.GET, value = "/mypage.do")
-public class MyPageController implements BaseController {
+@RequestMapping(method = RequestMapping.Method.POST, value = "/address/update.do")
+public class UpdateAddressController implements BaseController {
+
     AddressService addressService = new AddressServiceImpl(new AddressRepositoryImpl());
+
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
-
         HttpSession session = req.getSession(false);
-
-        if(session == null || session.getAttribute("user") == null){
+        if(session==null || session.getAttribute("user")==null){
             return "redirect:/login.do";
         }
-        User user = (User)session.getAttribute("user");
 
-        List<Address> addresses = addressService.getUserAddresses(user.getUserId());
+        String addressId = req.getParameter("addressId");
+        Address address = addressService.getAddress(addressId);
 
-        req.setAttribute("user", user);
-        req.setAttribute("addresses", addresses);
+        address.setRecipientName(req.getParameter("recipientName"));
+        address.setRecipientPhone(req.getParameter("recipientPhone"));
+        address.setAddress(req.getParameter("address"));
+        address.setDefault("true".equals((req.getParameter("isDefault"))));
 
-        return "/shop/user/mypage";
+        addressService.updateAddress(address);
+        return "redirect:/mypage.do";
     }
 }

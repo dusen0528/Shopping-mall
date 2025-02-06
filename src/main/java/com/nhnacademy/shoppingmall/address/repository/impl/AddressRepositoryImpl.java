@@ -3,6 +3,7 @@ package com.nhnacademy.shoppingmall.address.repository.impl;
 import com.nhnacademy.shoppingmall.address.domain.Address;
 import com.nhnacademy.shoppingmall.address.repository.AddressRepository;
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.transform.Result;
 import java.sql.Connection;
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 public class AddressRepositoryImpl implements AddressRepository {
     @Override
     public Optional<Address> findById(String addressId) {
@@ -45,6 +46,8 @@ public class AddressRepositoryImpl implements AddressRepository {
         String sql = "SELECT * FROM addresses WHERE user_id=?";
         List<Address> addresses = new ArrayList<>();
 
+        log.debug("sql: {}", sql);
+        log.debug("userId: {}", userId);
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1, userId);
             try(
@@ -100,6 +103,11 @@ public class AddressRepositoryImpl implements AddressRepository {
         String sql = "INSERT INTO addresses (address_id, user_id, recipient_name, recipient_phone, address, is_default) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
+        log.debug("sql:{}", sql);
+        log.debug("parameters: addressId={}, userId={}, recipientName={}, recipientPhone={}, address={}, isDefault={}",
+                address.getAddressId(), address.getUserId(), address.getRecipientName(),
+                address.getRecipientPhone(), address.getAddress(), address.isDefault());
+
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1, address.getAddressId());
             preparedStatement.setString(2, address.getUserId());
@@ -125,6 +133,7 @@ public class AddressRepositoryImpl implements AddressRepository {
             preparedStatement.setString(2, address.getRecipientPhone());
             preparedStatement.setString(3, address.getAddress());
             preparedStatement.setBoolean(4, address.isDefault());
+            preparedStatement.setString(5, address.getAddressId());
 
             return preparedStatement.executeUpdate();
         } catch (SQLException e) {

@@ -1,5 +1,9 @@
 package com.nhnacademy.shoppingmall.controller.page;
 
+import com.nhnacademy.shoppingmall.address.domain.Address;
+import com.nhnacademy.shoppingmall.address.repository.impl.AddressRepositoryImpl;
+import com.nhnacademy.shoppingmall.address.service.AddressService;
+import com.nhnacademy.shoppingmall.address.service.impl.AddressServiceImpl;
 import com.nhnacademy.shoppingmall.common.mvc.annotation.RequestMapping;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
 import com.nhnacademy.shoppingmall.user.domain.User;
@@ -18,6 +22,8 @@ public class UpdateProfileController implements BaseController {
 
     UserService userService = new UserServiceImpl(new UserRepositoryImpl());
 
+    AddressService addressService = new AddressServiceImpl(new AddressRepositoryImpl());
+
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
         HttpSession session = req.getSession();
@@ -31,6 +37,18 @@ public class UpdateProfileController implements BaseController {
         user.setUserName(userName);
 
         userService.updateUser(user);
+
+        String addressId = req.getParameter("addressId");
+        if(addressId != null && !addressId.isEmpty()){
+            Address address = addressService.getAddress(addressId);
+            address.setRecipientName(req.getParameter("recipientName"));
+            address.setRecipientPhone(req.getParameter("recipientPhone"));
+            address.setAddress(req.getParameter("address"));
+            address.setDefault("true".equals(req.getParameter("isDefault")));
+            addressService.updateAddress(address);
+        }
+
+
         return "redirect:/mypage.do";
     }
 }

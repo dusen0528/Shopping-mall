@@ -1,54 +1,41 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
-<head>
-  <title>프로필 수정</title>
-  <style>
-    form {
-      width: 300px;
-      margin: 0 auto;
-    }
-    label {
-      display: inline-block;
-      width: 100px;
-      margin-bottom: 10px;
-    }
-    input[type="text"], input[type="email"], input[type="date"] {
-      width: 200px;
-      padding: 5px;
-      margin-bottom: 10px;
-    }
-    input[type="submit"] {
-      margin-top: 10px;
-      padding: 5px 10px;
-    }
-  </style>
-</head>
-<body>
-<h1>프로필 수정</h1>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<c:if test="${not empty user}">
-  <form action="/update_profile.do" method="post">
-    <label for="userName">이름:</label>
-    <input type="text" id="userName" name="userName" value="${user.userName}" required><br>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 
-    <label for="userBirth">생년월일:</label>
-    <input type="date" id="userBirth" name="userBirth" value="${user.userBirth}" required><br>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title mb-4">프로필 수정</h4>
 
-    <input type="submit" value="정보 수정">
-  </form>
+          <form action="/update_profile.do" method="post">
+            <div class="mb-3">
+              <label for="userName" class="form-label">이름</label>
+              <input type="text" class="form-control" id="userName" name="userName"
+                     value="${user.userName}" required>
+            </div>
 
-  <div class="mt-3">
-    <a href="/change_password.do" class="btn btn-secondary">비밀번호 변경</a>
+            <div class="mb-3">
+              <label for="userBirth" class="form-label">생년월일</label>
+              <input type="date" class="form-control" id="userBirth" name="userBirth"
+                     value="${user.userBirth}" required>
+            </div>
+
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg"></i> 수정 완료
+              </button>
+              <a href="/mypage.do" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> 뒤로가기
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
-</c:if>
-
-<c:if test="${empty user}">
-  <p>사용자 정보를 불러올 수 없습니다. 다시 로그인해주세요.</p>
-  <a href="/login.do">로그인 페이지로 이동</a>
-</c:if>
-
-<br>
-<a href="/index.do">마이페이지로 돌아가기</a>
-</body>
-</html>
+</div>
