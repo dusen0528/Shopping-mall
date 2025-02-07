@@ -1,5 +1,6 @@
 package com.nhnacademy.shoppingmall.common.mvc.servlet;
 
+import com.nhnacademy.shoppingmall.common.mvc.exception.HttpException;
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
 import com.nhnacademy.shoppingmall.common.mvc.view.ViewResolver;
 import com.nhnacademy.shoppingmall.common.mvc.controller.BaseController;
@@ -57,9 +58,13 @@ public class FrontServlet extends HttpServlet {
                 RequestDispatcher rd = req.getRequestDispatcher(layout);
                 rd.include(req, resp);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) { // 최상위 오류 Throwable
+
             log.error("error:{}", e);
-//             DbConnectionThreadLocal.setSqlError(true);
+             DbConnectionThreadLocal.setSqlError(true);
+             if(e instanceof HttpException httpException){
+                 httpException.getStatusCode();
+             }
             // todo#7-5 예외가 발생하면 해당 예외에 대해서 적절한 처리를 합니다.
             try {
                 // 에러 페이지로 포워딩
@@ -71,15 +76,7 @@ public class FrontServlet extends HttpServlet {
             }
 
         }
-        // finally {
-        // //todo#7-4 connection을 반납합니다.
-        // try {
-        // // DB 커넥션 정리
-        // DbConnectionThreadLocal.reset();
-        // } catch (Exception e) {
-        // log.error("Error closing connection", e);
-        // }
-        // }
+
     }
 
 }

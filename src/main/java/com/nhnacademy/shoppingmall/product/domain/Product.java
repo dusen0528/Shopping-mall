@@ -12,12 +12,10 @@ public class Product {
     private int productPrice;
     private int productStock;
     private ProductStatus productStatus;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
 
     public Product(String productId, String categoryId, String productName, String productImage,
-                   int productPrice, int productStock, ProductStatus productStatus,
-                   LocalDateTime createdAt, LocalDateTime updatedAt) {
+                   int productPrice, int productStock, ProductStatus productStatus) {
         this.productId = productId;
         this.categoryId = categoryId;
         this.productName = productName;
@@ -25,8 +23,7 @@ public class Product {
         this.productPrice = productPrice;
         this.productStock = productStock;
         this.productStatus = productStatus;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+
     }
 
     public String getProductId() {
@@ -85,20 +82,5 @@ public class Product {
         this.productStatus = productStatus;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }
 

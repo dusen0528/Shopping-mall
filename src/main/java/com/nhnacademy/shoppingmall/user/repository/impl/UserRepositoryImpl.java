@@ -7,8 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public class UserRepositoryImpl implements UserRepository {
@@ -19,8 +18,14 @@ public class UserRepositoryImpl implements UserRepository {
           해당 코드는 SQL Injection이 발생합니다. SQL Injection이 발생하지 않도록 수정하세요.
          */
         Connection connection = DbConnectionThreadLocal.getConnection();
-        String sql = "select user_id, user_name, user_password, user_birth, user_auth, user_point, created_at, latest_login_at "
-                + "from users where user_id=? and user_password=?";
+        String sql = """
+    SELECT user_id, user_name, user_password, user_birth, 
+           user_auth, user_point, created_at, latest_login_at 
+    FROM users 
+    WHERE user_id = ? AND user_password = ?
+    """;
+        // Todo 1 : 비밀번호, 포인트등은 로그인 후 세션에서 들고 있을 필요 없음
+        // 상황에 맞는 필요한 객체만 별도로 만들어서 응답해주기
 
         log.debug("sql:{}",sql);
 

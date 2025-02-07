@@ -13,6 +13,7 @@ import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class RegisterController implements BaseController {
         String userpassword = req.getParameter("userPassword");
         String username = req.getParameter("userName");
         String userbirth = req.getParameter("userBirth");
+
 
         User user = new User(
                 userid,
