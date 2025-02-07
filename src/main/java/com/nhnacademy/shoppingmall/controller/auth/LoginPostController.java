@@ -10,6 +10,7 @@ import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.transaction.Transactional;
@@ -17,36 +18,36 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 
+@Slf4j
 @Transactional
-@RequestMapping(method = RequestMapping.Method.POST,value = "/loginAction.do")
+@RequestMapping(method = RequestMapping.Method.POST, value = "/loginAction.do")
 public class LoginPostController implements BaseController {
 
     private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
-//        // TODO 2 아래와 같이 파라미터 검증하기
-//        String id = req.getParameter("user_id");
-//        String password = req.getParameter("user_password");
-//        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(password)) {
-//            return "redirect:/login.do";
-//        }
+        String userId = req.getParameter("user_id");
+        String userPassword = req.getParameter("user_password");
 
-        //todo#13-2 로그인 구현, session은 60분동안 유지됩니다.
-        User user = userService.doLogin(req.getParameter("user_id"), req.getParameter("user_password"));
-        if(user==null){
-            return "redirect:/login.do";
+        Optional<User> optionalUser = Optional.ofNullable(userService.doLogin(userId, userPassword));
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            HttpSession session = req.getSession(true);
+            session.setMaxInactiveInterval(3600);
+            session.setAttribute("user", user);
+            session.setAttribute("userRole", user.getUserAuth().toString());
+            log.info("Login successful for user: {} with role: {}", userId, user.getUserAuth());
+            log.debug("Session userRole: " + user.getUserAuth().toString()); // 로깅 추가
+            // #3-6, 마지막 로그인 시간 업데이트
+            userService.updateLatestLoginAtByUserId(userId, LocalDateTime.now());
+
+            return "redirect:/index.do";
+        } else {
+            log.warn("Login failed for user: {}", userId);
+            req.setAttribute("loginFailed", true);
+            return "shop/login/login_form";
         }
-
-
-        user.setLatestLoginAt(LocalDateTime.now());
-        userService.updateUser(user);
-
-        HttpSession session = req.getSession(true);
-        session.setMaxInactiveInterval(3600);
-        session.setAttribute("user", user);
-
-
-        return "redirect:/index.do";
     }
 }

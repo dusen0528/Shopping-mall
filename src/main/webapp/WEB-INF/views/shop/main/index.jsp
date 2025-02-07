@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<c:if test="${sessionScope.user.userAuth == 'ROLE_ADMIN'}">
+<c:if test="${sessionScope.userRole == 'ROLE_ADMIN'}">
     <div class="admin-controls mb-3">
         <a href="/admin/product/add.do" class="btn btn-primary">상품 추가</a>
     </div>

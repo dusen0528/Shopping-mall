@@ -2,6 +2,8 @@ package com.nhnacademy.shoppingmall.user.service;
 
 import com.nhnacademy.shoppingmall.user.domain.User;
 
+import java.time.LocalDateTime;
+
 public interface UserService {
 
     User getUser(String userId);
@@ -14,4 +16,5 @@ public interface UserService {
 
     User doLogin(String userId, String userPassword);
 
+    int updateLatestLoginAtByUserId(String userId, LocalDateTime latestLoginAt);
 }

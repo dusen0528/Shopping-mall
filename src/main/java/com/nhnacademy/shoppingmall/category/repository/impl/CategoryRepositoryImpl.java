@@ -3,6 +3,7 @@ package com.nhnacademy.shoppingmall.category.repository.impl;
 import com.nhnacademy.shoppingmall.category.domain.Category;
 import com.nhnacademy.shoppingmall.category.repository.CategoryRepository;
 import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public Optional<Category> findById(String categoryId) {
@@ -43,17 +45,19 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         String sql = "SELECT category_id, category_name FROM categories";
         List<Category> categories = new ArrayList<>();
 
-        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-            try(ResultSet rs = preparedStatement.executeQuery()){
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {  // 🔥 모든 행 반복 처리
                 categories.add(new Category(
-                   rs.getString("category_id"),
-                   rs.getString("category_name")
+                        rs.getString("category_id"),
+                        rs.getString("category_name")
                 ));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            log.error("카테고리 조회 실패 - SQL: {}", sql, e);
+            throw new RuntimeException("카테고리 목록 조회 중 오류 발생", e);
         }
-
         return categories;
     }
 
