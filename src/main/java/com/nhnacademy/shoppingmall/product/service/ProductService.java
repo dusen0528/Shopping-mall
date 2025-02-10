@@ -2,6 +2,7 @@ package com.nhnacademy.shoppingmall.product.service;
 
 import com.nhnacademy.shoppingmall.product.domain.Product;
 import com.nhnacademy.shoppingmall.product.ProductStatus;
+import com.nhnacademy.shoppingmall.product.exception.OutOfStockException;
 
 import java.util.List;
 
@@ -45,4 +46,16 @@ public interface ProductService {
 
     // 전체 제품 수 조회
     long getProductCount();
+
+    // 재고 확인
+    boolean checkStock(String productId, int quantity);
+
+    // 재고 감소
+    void decreaseStock(String productId, int quantity) throws OutOfStockException;
+
+    // 재고 증가
+    void increaseStock(String productId, int quantity);
+
+    // 재고 확인 및 예약
+    void reserveStock(String productId, int quantity) throws OutOfStockException;
 }

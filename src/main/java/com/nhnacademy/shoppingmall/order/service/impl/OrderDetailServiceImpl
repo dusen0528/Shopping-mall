@@ -1,0 +1,41 @@
+package com.nhnacademy.shoppingmall.order.service.impl;
+
+import com.nhnacademy.shoppingmall.order.domain.OrderDetail;
+import com.nhnacademy.shoppingmall.order.repository.OrderDetailRepository;
+import com.nhnacademy.shoppingmall.order.service.OrderDetailService;
+import java.util.List;
+
+public class OrderDetailServiceImpl implements OrderDetailService {
+    private final OrderDetailRepository orderDetailRepository;
+
+    public OrderDetailServiceImpl(OrderDetailRepository orderDetailRepository) {
+        this.orderDetailRepository = orderDetailRepository;
+    }
+
+    @Override
+    public OrderDetail getOrderDetail(String orderDetailId) {
+        return orderDetailRepository.findById(orderDetailId)
+                .orElseThrow(() -> new RuntimeException("OrderDetail not found with id: " + orderDetailId));
+    }
+
+    @Override
+    public List<OrderDetail> getOrderDetails(String orderId) {
+        return orderDetailRepository.findByOrderId(orderId);
+    }
+
+    @Override
+    public void createOrderDetail(OrderDetail orderDetail) {
+        int result = orderDetailRepository.save(orderDetail);
+        if (result != 1) {
+            throw new RuntimeException("Failed to create order detail");
+        }
+    }
+
+    @Override
+    public void deleteOrderDetail(String orderDetailId) {
+        int result = orderDetailRepository.deleteById(orderDetailId);
+        if (result != 1) {
+            throw new RuntimeException("Failed to delete order detail");
+        }
+    }
+}

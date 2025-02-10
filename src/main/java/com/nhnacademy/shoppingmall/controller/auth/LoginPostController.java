@@ -37,14 +37,12 @@ public class LoginPostController implements BaseController {
             HttpSession session = req.getSession(true);
             session.setMaxInactiveInterval(3600);
             session.setAttribute("user", user);
-            session.setAttribute("userRole", user.getUserAuth().toString());
+            session.setAttribute("userId", user.getUserId());
             log.info("Login successful for user: {} with role: {}", userId, user.getUserAuth());
-            log.debug("Session userRole: " + user.getUserAuth().toString()); // 로깅 추가
-            // #3-6, 마지막 로그인 시간 업데이트
-            userService.updateLatestLoginAtByUserId(userId, LocalDateTime.now());
 
+            userService.updateLatestLoginAtByUserId(userId, LocalDateTime.now());
             return "redirect:/index.do";
-        } else {
+        }else {
             log.warn("Login failed for user: {}", userId);
             req.setAttribute("loginFailed", true);
             return "shop/login/login_form";

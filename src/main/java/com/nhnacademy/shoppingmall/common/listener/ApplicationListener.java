@@ -1,68 +1,55 @@
 package com.nhnacademy.shoppingmall.common.listener;
 
-import com.nhnacademy.shoppingmall.common.mvc.transaction.DbConnectionThreadLocal;
-import com.nhnacademy.shoppingmall.user.domain.User;
+import com.nhnacademy.shoppingmall.cart.repository.impl.CartRepositoryImpl;
+import com.nhnacademy.shoppingmall.cart.service.impl.CartServiceImpl;
+import com.nhnacademy.shoppingmall.point.repository.impl.PointRepositoryImpl;
+import com.nhnacademy.shoppingmall.point.service.impl.PointServiceImpl;
+import com.nhnacademy.shoppingmall.product.repository.impl.ProductRepositoryImpl;
+import com.nhnacademy.shoppingmall.product.service.ProductService;
+import com.nhnacademy.shoppingmall.product.service.impl.ProductServiceImpl;
 import com.nhnacademy.shoppingmall.user.repository.impl.UserRepositoryImpl;
 import com.nhnacademy.shoppingmall.user.service.UserService;
 import com.nhnacademy.shoppingmall.user.service.impl.UserServiceImpl;
-import lombok.extern.slf4j.Slf4j;
+import com.nhnacademy.shoppingmall.order.repository.impl.OrderRepositoryImpl;
+import com.nhnacademy.shoppingmall.order.service.OrderService;
+import com.nhnacademy.shoppingmall.order.service.impl.OrderServiceImpl;
+import com.nhnacademy.shoppingmall.order.repository.impl.OrderDetailRepositoryImpl;
+import com.nhnacademy.shoppingmall.cart.service.CartService;
+import com.nhnacademy.shoppingmall.point.service.PointService;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
-import java.time.LocalDateTime;
-
-
-@Slf4j
 public class ApplicationListener implements ServletContextListener {
-    private final UserService userService = new UserServiceImpl(new UserRepositoryImpl());
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        //todo#12 application 시작시 테스트 계정인 admin,user 등록합니다. 만약 존재하면 등록하지 않습니다.
-        try{
-            DbConnectionThreadLocal.initialize();
+        ServletContext context = sce.getServletContext();
 
-            User admin = userService.getUser("admin");
-            User user = userService.getUser("user");
-            LocalDateTime now = LocalDateTime.now();
+        // 기본 서비스들 초기화
+        ProductService productService = new ProductServiceImpl(new ProductRepositoryImpl());
+        UserService userService = new UserServiceImpl(new UserRepositoryImpl());
+        CartService cartService = new CartServiceImpl(new CartRepositoryImpl());
+        PointService pointService = new PointServiceImpl(new PointRepositoryImpl());
 
-            if (admin == null) {
-                User newAdmin = new User(
-                        "admin",         // userId
-                        "관리자",        // userName
-                        "123",        // userPassword
-                        "2000-01-01",   // userBirth
-                        User.Auth.ROLE_ADMIN,  // userAuth
-                        1000,           // userPoint
-                        now,            // createdAt
-                        null            // latestLoginAt
-                );
-                userService.saveUser(newAdmin);
-                log.info("Admin account created successfully");
-            }
+        // PointChannel 가져오기 (PointThreadInitializer에서 초기화됨)
+        RequsetChannel pointChannel = (RequsetChannel) context.getAttribute("pointChannel");
 
-            if (user == null) {
-                User newUser = new User(
-                        "user",         // userId
-                        "사용자",        // userName
-                        "123",        // userPassword
-                        "2000-01-01",   // userBirth
-                        User.Auth.ROLE_USER,   // userAuth
-                        1000,           // userPoint
-                        now,            // createdAt
-                        null            // latestLoginAt
-                );
-                userService.saveUser(newUser);
-                log.info("User account created successfully");
-            }
+        // OrderService 초기화 (모든 의존성 주입)
+        OrderService orderService = new OrderServiceImpl(
+                new OrderRepositoryImpl(),
+                new OrderDetailRepositoryImpl(),
+                productService,
+                pointService,
+                cartService,
+                pointChannel
+        );
 
-
-        } catch (Exception e) {
-            DbConnectionThreadLocal.setSqlError(true);
-            throw new RuntimeException(e);
-        }finally {
-            DbConnectionThreadLocal.reset();
-        }
-
+        // ServletContext에 서비스 등록
+        context.setAttribute("productService", productService);
+        context.setAttribute("userService", userService);
+        context.setAttribute("orderService", orderService);
+        context.setAttribute("cartService", cartService);
+        context.setAttribute("pointService", pointService);
     }
 }

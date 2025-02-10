@@ -5,6 +5,7 @@ import com.nhnacademy.shoppingmall.user.domain.User;
 import com.nhnacademy.shoppingmall.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -47,6 +48,9 @@ public class UserServiceImpl implements UserService {
     public int updateLatestLoginAtByUserId(String userId, LocalDateTime latestLoginAt) {
         return userRepository.updateLatestLoginAtByUserId(userId, latestLoginAt);
     }
-
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
 }

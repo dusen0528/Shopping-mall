@@ -189,4 +189,33 @@ public class UserRepositoryImpl implements UserRepository {
         return 0;
     }
 
+    // UserRepositoryImpl
+    @Override
+    public List<User> findAll() {
+        Connection connection = DbConnectionThreadLocal.getConnection();
+        String sql = "SELECT * FROM users";
+        List<User> users = new ArrayList<>();
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                users.add(new User(
+                        rs.getString("user_id"),
+                        rs.getString("user_name"),
+                        rs.getString("user_password"),
+                        rs.getString("user_birth"),
+                        User.Auth.valueOf(rs.getString("user_auth")),
+                        rs.getInt("user_point"),
+                        rs.getTimestamp("created_at").toLocalDateTime(),
+                        rs.getTimestamp("latest_login_at") != null ?
+                                rs.getTimestamp("latest_login_at").toLocalDateTime() : null
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return users;
+    }
 }

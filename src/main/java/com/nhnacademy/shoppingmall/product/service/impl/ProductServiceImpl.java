@@ -2,6 +2,7 @@ package com.nhnacademy.shoppingmall.product.service.impl;
 
 import com.nhnacademy.shoppingmall.product.ProductStatus;
 import com.nhnacademy.shoppingmall.product.domain.Product;
+import com.nhnacademy.shoppingmall.product.exception.OutOfStockException;
 import com.nhnacademy.shoppingmall.product.repository.ProductRepository;
 import com.nhnacademy.shoppingmall.product.service.ProductService;
 
@@ -85,4 +86,51 @@ public class ProductServiceImpl implements ProductService {
     public long getProductCount() {
         return productRepository.count();
     }
+    @Override
+    public boolean checkStock(String productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        return product.getProductStock() >= quantity;
+    }
+
+    @Override
+    public synchronized void decreaseStock(String productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (product.getProductStock() < quantity) {
+            throw new OutOfStockException(productId, quantity, product.getProductStock());
+        }
+
+        int newStock = product.getProductStock() - quantity;
+        product.setProductStock(newStock);
+        productRepository.updateStock(productId, newStock);
+    }
+
+    @Override
+    public synchronized void increaseStock(String productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        int newStock = product.getProductStock() + quantity;
+        product.setProductStock(newStock);
+        productRepository.updateStock(productId, newStock);
+    }
+
+    @Override
+    public synchronized void reserveStock(String productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (product.getProductStock() < quantity) {
+            throw new OutOfStockException(productId, quantity, product.getProductStock());
+        }
+
+        // 재고 예약 (실제 감소는 주문 완료 시 수행)
+        int newStock = product.getProductStock() - quantity;
+        product.setProductStock(newStock);
+        productRepository.updateStock(productId, newStock);
+    }
+
+
 }
